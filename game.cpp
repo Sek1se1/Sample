@@ -117,20 +117,21 @@ int main(){
     
     // 初期値設定（テスト用）
     int num = 1;
-    for (int i = 0; i < 5; ++i)
-    for (int j = 0; j < 5; ++j)
-    field.rotateZone(0, 0, 5);  // 回転して変化を見るため仮に使用
-    
-    field.display();
-
+    //for (int i = 0; i < 5; ++i){ ←とりあえず消してみた
+    //for (int i = 0; i < 5; ++i) ←とりあえず消してみた
+    //field.rotateZone(0, 0, 5);  // 回転して変化を見るため仮に使用
+    //cout << "=== 回転後 ===" << endl;
+    //field.display();
+    //cout << "手数: " << field.getMoveCount() << endl;
         // 2×2の園を (1,1) を左上として回転
-    field.rotateZone(1, 1, 2);
-
+    //field.rotateZone(1, 1, 2); 
+    field.display();
     cout << "=== 回転後 ===" << endl;
+    field.rotateZone(1, 1, 2); 
     field.display();
 
     cout << "手数: " << field.getMoveCount() << endl;
 
-    
+    //} ←とりあえず消してみた
     
 }
