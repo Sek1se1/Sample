@@ -26,7 +26,7 @@ class Field {
     }
     
     // 導き（園を右回転）
-    void rotateZone(int x, int y, int size) {
+    void rotateZone(int y, int x, int size) {
         // 境界チェック
         if (x + size > row || y + size > col) {
             cout << "範囲外です" << endl;
@@ -61,44 +61,10 @@ class Field {
             cout << endl;
         }
     }
-    
-    // void display() const {
-    //     for (const auto& Row : entity) {
-    //         for (const auto& Ent : Row) {
-    //             cout << Ent << " ";
-    //         }
-    //         cout << endl;
-    //     }
-    // }
-    // 一応残していますが、別に使わなくてもおｋ
 
     int getMoveCount() const { return moveCount; }
 
-
 };
-
-// int main() {
-//     //例として4*4のフィールドfieldを初期化
-//     Field field(4, 4);
-    
-//     //適当に配置
-//     vector<vector<int>> model = {
-//         {0,1,2,3},
-//         {4,5,6,7},
-//         {0,1,2,3},
-//         {4,5,6,7}
-//     };
-
-    
-//     field.entity = model;
-//     field.display();
-//     cout << endl;
-//     field.rotateZone(0, 0, 2);
-//     field.display();
-
-//     // cout << "modelフィールド" << endl;
-    
-// }
 
 
 int main(){
@@ -116,7 +82,7 @@ int main(){
 
     
     // 初期値設定（テスト用）
-    int num = 1;
+    //パターン1
     //for (int i = 0; i < 5; ++i){ ←とりあえず消してみた
     //for (int i = 0; i < 5; ++i) ←とりあえず消してみた
     //field.rotateZone(0, 0, 5);  // 回転して変化を見るため仮に使用
@@ -125,13 +91,13 @@ int main(){
     //cout << "手数: " << field.getMoveCount() << endl;
         // 2×2の園を (1,1) を左上として回転
     //field.rotateZone(1, 1, 2); 
+
+    //パターン2
     field.display();
     cout << "=== 回転後 ===" << endl;
-    field.rotateZone(1, 1, 2); 
+    field.rotateZone(0, 1, 2); 
     field.display();
 
     cout << "手数: " << field.getMoveCount() << endl;
-
-    //} ←とりあえず消してみた
     
 }
