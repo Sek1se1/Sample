@@ -65,11 +65,11 @@ class Field {
 
     //すべてペアになっているか確認する関数
     //引数はフィールドの大きさ
-    void check(int size) const {
-        bool judge = false;
+    void check(const int size) const {
         for(int x=0; x < size; x++){
             for(int y=0; y < size; y++){
                 int cpa = entity.at(x).at(y);
+                bool judge = false;
                 if(x==0 && y==0){
                     if((cpa == entity.at(x+1).at(y)) || (cpa == entity.at(x).at(y+1))){
                         judge = true;
@@ -114,11 +114,9 @@ class Field {
                 
             }
         }
-        if(judge==true){
-            cout << "すべてのエンティティがペアになっています" << endl;
-            return;
-        }
         
+        cout << "すべてのエンティティがペアになっています" << endl;
+
     }
 
     //手数をカウントする関数
@@ -131,7 +129,7 @@ int main(){
     
     //テスト
     //フィールド1
-    
+    /*
     Field field(5, 5);
     vector<vector<int>> model = {
         {0,1,2,3,4},
@@ -140,10 +138,10 @@ int main(){
         {15,16,17,18,19},
         {20,21,22,23,24}
     };
-    
+    */
 
     //フィールド2
-    /*
+    
     Field field(4,4);
     vector<vector<int>> model = {
         {0,1,2,3},
@@ -151,14 +149,14 @@ int main(){
         {4,1,5,7},
         {4,5,6,7},
     };
-    */
+    
 
     field.entity = model;
 
     
     // 初期値設定
     //パターン1
-    
+    /*
     field.display();
     cout << "=== 回転後 ===" << endl;
     field.rotateZone(0, 1, 2); 
@@ -167,10 +165,10 @@ int main(){
     field.check(4);
 
     cout << "手数: " << field.getMoveCount() << endl;
-    
+    */
 
     //パターン2
-    /*
+    
     field.display();
     cout << "=== 回転後 ===" << endl;
     field.rotateZone(1, 1, 2); 
@@ -179,5 +177,5 @@ int main(){
     field.check(4);
 
     cout << "手数: " << field.getMoveCount() << endl;
-    */
+    
 }
