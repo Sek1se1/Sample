@@ -1,5 +1,4 @@
-#include <iostream>
-#include<vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 // 座標を表す構造体
@@ -23,6 +22,22 @@ class Field {
     public:
     Field(int r, int c) : row(r), col(c) {
         entity.resize(row, vector<int>(col, 0));
+    }
+
+    public:
+    vector<pair<int,int>> Position;
+
+    void init(int x) {
+        pair<int, int> K = make_pair(-1, -1);
+        for (int i = 0; i < pow(x, 2) / 2; i++) {
+            Position.push_back(K);
+        }
+
+        for (auto i : entity) {
+            for (auto j : i) {
+                cout << j << endl;
+            }
+        }
     }
     
     // 導き（園を右回転）
@@ -168,14 +183,14 @@ int main(){
     */
 
     //パターン2
-    
+    field.init(4);
     field.display();
     cout << "=== 回転後 ===" << endl;
-    field.rotateZone(1, 1, 2); 
+    field.rotateZone(1, 2, 2); 
     field.display();
 
     field.check(4);
 
-    cout << "手数: " << field.getMoveCount() << endl;
+    // cout << "手数: " << field.getMoveCount() << endl;
     
 }
