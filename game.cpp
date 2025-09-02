@@ -25,17 +25,17 @@ class Field {
     }
 
     public:
-    vector<pair<int,int>> Position;
+    vector<vector<pair<int,int>>> Position;
 
-    void init(int x) {
-        pair<int, int> K = make_pair(-1, -1);
+    void init(int x, int y) {
+        vector<pair<int, int>> K;
         for (int i = 0; i < pow(x, 2) / 2; i++) {
             Position.push_back(K);
         }
 
-        for (auto i : entity) {
-            for (auto j : i) {
-                cout << j << endl;
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                Position.at(entity.at(i).at(j)).push_back(make_pair(i, j));
             }
         }
     }
@@ -183,7 +183,13 @@ int main(){
     */
 
     //パターン2
-    field.init(4);
+    field.init(4, 4);
+    for (auto i : field.Position) {
+        for (auto [a, b] : i) {
+            cout << a << " " << b << " | ";
+        }
+        cout << endl;
+    }
     field.display();
     cout << "=== 回転後 ===" << endl;
     field.rotateZone(1, 2, 2); 
