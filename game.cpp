@@ -29,7 +29,7 @@ class Field {
 
     void init(int x, int y) {
         vector<pair<int, int>> K;
-        for (int i = 0; i < pow(x, 2) / 2; i++) {
+        for (int i = 0; i < x * y / 2; i++) {
             Position.push_back(K);
         }
 
