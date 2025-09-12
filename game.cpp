@@ -80,62 +80,89 @@ class Field {
 
     //すべてペアになっているか確認する関数
     //引数はフィールドの大きさ
-    void check(const int size) const {
-        for(int x=0; x < size; x++){
-            for(int y=0; y < size; y++){
-                int cpa = entity.at(x).at(y);
-                bool judge = false;
-                if(x==0 && y==0){
-                    if((cpa == entity.at(x+1).at(y)) || (cpa == entity.at(x).at(y+1))){
+    void check(int size) const {
+    vector<pair<int,int>> dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+    for (int x = 0; x < size; x++) {
+        for (int y = 0; y < size; y++) {
+            int cpa = entity[x][y];
+            bool judge = false;
+            for (auto [dx, dy] : dirs) {
+                int nx = x + dx, ny = y + dy;
+                if (0 <= nx && nx < size && 0 <= ny && ny < size) {
+                    if (entity[nx][ny] == cpa) {
                         judge = true;
-                    }
-                }else if(x==0 && y==(size-1)){
-                    if((cpa == entity.at(x+1).at(y)) || (cpa == entity.at(x).at(y-1))){
-                        judge = true;
-                    }
-                }else if(x==0){
-                    if((cpa == entity.at(x).at(y-1)) || (cpa == entity.at(x).at(y+1)) || (cpa == entity.at(x+1).at(y))){
-                        judge = true;
-                    }
-                }else if(x==(size-1) && y==0){
-                    if((cpa == entity.at(x-1).at(y)) || (cpa == entity.at(x).at(y+1))){
-                        judge = true;
-                    }
-                }else if(y==0 ){
-                    if((cpa == entity.at(x-1).at(y)) || (cpa == entity.at(x+1).at(y)) || (cpa == entity.at(x).at(y+1))){
-                        judge = true;
-                    }
-                }else if(x==(size-1) && y==(size-1)){
-                    if((cpa == entity.at(x).at(y-1)) || (cpa == entity.at(x-1).at(y))){
-                        judge = true;
-                    }
-                }else if(x==(size-1)){
-                    if((cpa == entity.at(x).at(y-1)) || (cpa == entity.at(x).at(y+1)) || (cpa == entity.at(x-1).at(y))){
-                        judge = true;
-                    }
-                }else if(y==(size-1)){
-                    if((cpa == entity.at(x-1).at(y)) || (cpa == entity.at(x+1).at(y)) || (cpa == entity.at(x).at(y-1))){
-                        judge = true;
-                    }
-                }else{
-                    if((cpa == entity.at(x+1).at(y)) || (cpa == entity.at(x-1).at(y)) || (cpa == entity.at(x).at(y+1)) || (cpa == entity.at(x).at(y-1))){
-                        judge = true;
+                        break;
                     }
                 }
-                if(judge==false){
-                    cout << "ペアになっていないエンティティがあります。" << endl;
-                    return;
-                }
-                
+            }
+            if (!judge) {
+                cout << "ペアになっていないエンティティがあります。" << endl;
+                return;
             }
         }
-        
-        cout << "すべてのエンティティがペアになっています" << endl;
-
     }
+    cout << "すべてのエンティティがペアになっています" << endl;
+}
 
     //手数をカウントする関数
     int getMoveCount() const { return moveCount; }
+
+    // targetの位置を探す
+vector<Point> findTarget(const Field& field, int target) {
+    vector<Point> res;
+    for (int i = 0; i < field.row; i++) {
+        for (int j = 0; j < field.col; j++) {
+            if (field.entity[i][j] == target) {
+                res.push_back(Point(i,j));
+            }
+        }
+    }
+    return res;
+}
+
+// targetを隣接させる
+void bringTogether(Field& field, int target) {
+    auto pos = findTarget(field, target);
+    if (pos.size() < 2) {
+        cout << "対象が2つ未満です" << endl;
+        return;
+    }
+
+    Point base = pos[0]; // 最初のターゲットを基準にする
+
+    while (true) {
+        pos = findTarget(field, target);
+        // 隣同士になっていれば終了
+        for (auto &p1 : pos) {
+            for (auto &p2 : pos) {
+                if (p1.x == p2.x && abs(p1.y - p2.y) == 1) {
+                    cout << "横に隣接しました！" << endl;
+                    return;
+                }
+                if (p1.y == p2.y && abs(p1.x - p2.x) == 1) {
+                    cout << "縦に隣接しました！" << endl;
+                    return;
+                }
+            }
+        }
+
+        // 基準以外の1つを基準の近くに動かす（右か下方向）
+        Point targetPos = pos[1];
+        if (targetPos.x > base.x && targetPos.y > base.y) {
+            field.rotateZone(targetPos.y-1, targetPos.x-1, 2);
+        } else if (targetPos.x > base.x) {
+            field.rotateZone(max(0,targetPos.y-1), targetPos.x-1, 2);
+        } else if (targetPos.y > base.y) {
+            field.rotateZone(targetPos.y-1, max(0,targetPos.x-1), 2);
+        } else {
+            // 動かしづらい場合は少しランダムに動かす
+            field.rotateZone(0,0,2);
+        }
+
+        field.display();
+        cout << "---" << endl;
+        }
+    }
 
 };
 
