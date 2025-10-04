@@ -327,13 +327,107 @@ public:
         }
         cout << "すべてのエンティティがペアになっています\n";
     }
-    // 2x2回転できるか（固定セルを壊さないか）
-    
+
+    // ---------- ペア配置スロットの列挙（左下から右下へ縦積み） ----------
+    vector<pair<Point,Point>> enumeratePairGoalsBottomUp() const {
+        vector<pair<Point,Point>> goals;
+        // 下端 (row-2,row-1) から上に向かって縦ペアを積む
+        for (int c = 0; c < col; ++c) {
+            for (int r = row - 2; r >= 0; r -= 2) {
+                goals.push_back({Point(r, c), Point(r+1, c)});
+            }
+        }
+        return goals;
+    }
+
+    // ---------- 指定ターゲットのペアを左下から右下に向かって配置 ----------
+    bool movePairToBottomLeft(int target) {
+        auto curPos = locate(target);
+        if (curPos.size() < 2) {
+            cout << "movePairToBottomLeft: target が2個未満です\n";
+            return false;
+        }
+
+        // 隣接していなければまず隣接化（既存の bringTogether または bringTogetherNoBreak を流用）
+        if (!(abs(curPos[0].x - curPos[1].x) + abs(curPos[0].y - curPos[1].y) == 1)) {
+            bool ok = bringTogether(target);
+            if (!ok) return false;
+        }
+
+        // ゴールスロットを探す（まだ使われていない最初のスロット）
+        auto goals = enumeratePairGoalsBottomUp();
+        pair<Point,Point> chosenGoal;
+        bool foundGoal = false;
+        for (auto &g : goals) {
+            bool occupied = false;
+            for (auto &fc : fixedCells) {
+                if ((fc == g.first) || (fc == g.second)) { occupied = true; break; }
+            }
+            if (occupied) continue;
+            chosenGoal = g;
+            foundGoal = true;
+            break;
+        }
+        if (!foundGoal) {
+            cout << "movePairToBottomLeft: 空きゴールスロットがありません\n";
+            return false;
+        }
+
+        // ビームサーチ or BFS で移動（ここではシンプルに BFS 版を例示）
+        struct Node {
+            vector<vector<int>> board;
+            vector<pair<int,int>> moves;
+        };
+        queue<Node> q;
+        unordered_set<string> visited;
+
+        q.push({entity, {}});
+        visited.insert(serializeBoard(entity));
+
+        while (!q.empty()) {
+            Node cur = q.front(); q.pop();
+
+            if (boardHasPairAt(cur.board, target, chosenGoal)) {
+                // 成功
+                entity = cur.board;
+                fixedCells.push_back(chosenGoal.first);
+                fixedCells.push_back(chosenGoal.second);
+                moveCount += (int)cur.moves.size();
+                cout << "movePairToBottomLeft: 配置成功 手順数=" << cur.moves.size() << "\n";
+                for (auto &m : cur.moves) cout << " rotate(" << m.first << "," << m.second << ")\n";
+                cout << "\n";
+                return true;
+            }
+
+            // 次の回転
+            for (int r = 0; r < row-1; ++r) {
+                for (int c = 0; c < col-1; ++c) {
+                    if (!canRotateBlock(r, c)) continue;
+                    auto nb = cur.board;
+                    int tmp = nb[r][c];
+                    nb[r][c] = nb[r+1][c];
+                    nb[r+1][c] = nb[r+1][c+1];
+                    nb[r+1][c+1] = nb[r][c+1];
+                    nb[r][c+1] = tmp;
+
+                    string key = serializeBoard(nb);
+                    if (visited.count(key)) continue;
+                    visited.insert(key);
+                    auto nmoves = cur.moves;
+                    nmoves.emplace_back(r,c);
+                    q.push({nb, nmoves});
+                }
+            }
+        }
+
+        cout << "movePairToBottomLeft: 移動可能な手順が見つかりませんでした\n";
+        return false;
+    }
 };
 
 
 int main() {
-    Field field(6,6);
+    // 下の二次元配列にフィールドをつめる
     vector<vector<int>> model = {
         { 15,  6,  0,  3, 11,  7},
         { 16,  2,  8,  4, 17,  1},
@@ -342,13 +436,15 @@ int main() {
         {  1,  9,  4, 13, 15,  8},
         { 12, 14, 17, 10,  5, 11}
     };
+
+    Field field(model.size(), model.size());
     field.entity = model;
 
     cout << "=== 初期状態 ===\n";
     field.display();
 
     // 例: 数字 1 のペアを作って右上へ詰める（成功すれば固定される）
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < field.row * field.row / 2 - field.row; i++) {
         if (field.bringTogether(i)) {
             field.movePairToTopRight(i);
         } else {
@@ -356,6 +452,11 @@ int main() {
         }
         cout << "=== 中間状態 ===\n";
         field.display();
+    }
+    for (int i = field.row * field.row / 2 - field.row; i < field.row * field.row / 2; i++) {
+        if (field.bringTogether(i)) {
+            field.movePairToBottomLeft(i);
+        }
     }
 
     cout << "=== 最終状態 ===\n";
