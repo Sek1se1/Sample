@@ -4,7 +4,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-// 座標を表す構造体
+// 座標を表す構造体 
 struct Point {
     int x, y;
     Point(int x = 0, int y = 0) : x(x), y(y) {
@@ -243,11 +243,11 @@ void moveTarget(Point target, int x,int y,int count){
 void semilastMove(Point target, int x,int y,int count){
     if(y > 3){
         if(target.x==x+1&&target.y==y ){
-        cout << "目的のペアの一手前の形です" << endl;
-        rotateZone(target.x-1,target.y-1,2);
-        count++;
-        if (stopIfPaired()) return;
-        semilastMove(findTarget(entity[y][x],x,y),x,y,count);
+            cout << "目的のペアの一手前の形です" << endl;
+            rotateZone(target.x-1,target.y-1,2);
+            count++;
+            if (stopIfPaired()) return;
+            semilastMove(findTarget(entity[y][x],x,y),x,y,count);
         }
         else if(target.x==1&&target.y==col-1){
             if(x==1){
@@ -340,7 +340,7 @@ void semilastMove(Point target, int x,int y,int count){
 
 void lastMove(int count){
     if(row >4){
-        rotateZone(2,0,row-4);
+        rotateZone(2,0,max(row-4,4));
         rotateZone(1,3,row-3);
     }
 }
@@ -520,7 +520,7 @@ void nextMove() {
     mt19937 rng(random_device{}());  
 
     int t = max(1, row / 6);
-    uniform_int_distribution<int> scaleDist(max(2, row / 3), row - 2);
+    uniform_int_distribution<int> scaleDist(max(2, row / 3), row);
     uniform_int_distribution<int> placeDist(0, row - 1);
 
     for (int i = 0; i < t; i++) {

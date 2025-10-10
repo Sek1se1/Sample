@@ -192,10 +192,12 @@ bool limitedProcess(int limitSeconds ,time_point<steady_clock> start) {
 // =============================
 int main() {
 auto start = steady_clock::now();  // 開始時刻
-int limit = 60;
+int limit = 20; //制限時間．5分より少し短くする．
 Field field(1, 1); // 仮の初期化。あとで本物のサイズで上書き。
 vector<vector<int>> model;
 int bestAnswer = INT_MAX; //いい回答の手数を保持
+int firstAnswer = INT_MAX;
+int tky=0;
 vector<performance> bestHistory; //いい回答の内容を保持
 
 try {
@@ -236,6 +238,7 @@ catch (const exception& e) {
         exit(0);
     }
     bestAnswer = field.moveCount;
+    firstAnswer = field.moveCount;
     bestHistory = field.history;
     posting(field.exportHistoryToJson(bestHistory));
 
@@ -260,7 +263,13 @@ while(limitedProcess(limit,start)){
     tryTimes++;
 }
 cout << tryTimes << endl;
-cout << bestAnswer << endl;
-posting(field.exportHistoryToJson(bestHistory));
+
+if(bestAnswer < firstAnswer){
+    cout << "二回目以降:"<< bestAnswer << endl;
+    posting(field.exportHistoryToJson(bestHistory));
+}else{
+    cout << "初回:"<< bestAnswer << endl;
+}
+
     
 }
